@@ -181,10 +181,6 @@ function afficherStatut($statut) {
                             if (isset($mots[1])) {
                                 $initiales_collab .= strtoupper(substr($mots[1], 0, 1));
                             }
-                            
-                            // On attribue une couleur dynamique à l'avatar en fonction de la taille du nom
-                            $couleurs = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6'];
-                            $couleur_avatar = $couleurs[strlen($collab['nom']) % 5];
                         ?>
                         <div class="team-member">
                             <div class="avatar" style="background: <?php echo $couleur_avatar; ?>; color: white; display:flex; justify-content:center; align-items:center; width:40px; height:40px; border-radius:50%; font-weight:bold;">
