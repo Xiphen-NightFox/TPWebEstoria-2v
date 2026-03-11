@@ -15,10 +15,10 @@ $projet_id = $_GET['id'];
 $client_id = $_SESSION['client_id'];
 
 // On vérifie si un formulaire de cette page a été envoyé (modification ou archivage)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Cas 1 : L'utilisateur a cliqué sur "Enregistrer les modifications"
-    if ($_POST['action'] === 'modifier') {
+    if (isset($_POST['action']) && $_POST['action'] === 'modifier') {
         
         // On récupère les nouvelles valeurs saisies dans le formulaire de modification
         $titre = $_POST['titre'];
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     }
     
     // Cas 2 : L'utilisateur a cliqué sur le bouton "Archiver"
-    if ($_POST['action'] === 'archiver') {
+    if (isset($_POST['action']) && $_POST['action'] === 'archiver') {
         
         // On supprime définitivement le projet de la base de données
         $stmt = $pdo->prepare("DELETE FROM projets WHERE id = ? AND client_id = ?");
@@ -55,8 +55,14 @@ $stmt->execute([$projet_id, $client_id]);
 // On stocke toutes les infos du projet (titre, description, dates...) dans la variable $projet
 $projet = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Variable pour gérer l'affichage du temps total
-$heures_totales = 0; 
+
+//temps passé sur le projet
+$stmtHeures = $pdo->prepare("SELECT SUM(temps_passe) FROM tickets WHERE projet_id = ?");
+$stmtHeures->execute([$projet_id]);
+// On récupère la somme. S'il n'y a aucun ticket
+$heures_totales = $stmtHeures->fetchColumn() ?: 0; 
+
+
 
 // Petite fonction maison pour traduire le nom du statut ("en_cours" -> "En cours")
 function afficherStatut($statut) {
@@ -107,7 +113,7 @@ function afficherStatut($statut) {
                     <!-- On affiche l'ID du projet -->
                     <span class="ticket-id">#P-<?php echo $projet['id']; ?></span>
                     <!-- On affiche le titre du projet -->
-                    <h1 class="ticket-title"><?php echo $projet['titre']; ?></h1>
+                    <h1 class="ticket-title"><?php echo htmlspecialchars($projet['titre']); ?></h1>
                 </div>
                 <div class="header-actions">
                     <!-- Bouton qui ouvre la fenêtre de modification -->
@@ -131,7 +137,7 @@ function afficherStatut($statut) {
                         </div>
                         <div class="card-body">
                             <!-- La fonction nl2br() permet de conserver les sauts de ligne tapés par l'utilisateur -->
-                            <p><?php echo nl2br($projet['description']); ?></p>
+                            <p><?php echo nl2br(htmlspecialchars($projet['description'])); ?></p>
                         </div>
                     </div>
                 </div>
@@ -144,7 +150,7 @@ function afficherStatut($statut) {
                         <div class="side-row">
                             <label>Statut</label>
                             <!-- La couleur du badge change si le statut est "en_cours" -->
-                            <span class="status-select <?php echo ($projet['statut']); ?>">
+                            <span class="status-select <?php echo htmlspecialchars($projet['statut']); ?>">
                                 <?php echo afficherStatut($projet['statut']); ?>
                             </span>
                         </div>
@@ -192,7 +198,7 @@ function afficherStatut($statut) {
                 <label>Nom du projet</label>
                 <div class="input-group">
                     <!-- On pré-remplit le champ avec le titre actuel du projet -->
-                    <input type="text" name="titre" class="TitreEdit" value="<?php echo $projet['titre']; ?>" required>
+                    <input type="text" name="titre" class="TitreEdit" value="<?php echo htmlspecialchars($projet['titre']); ?>" required>
                     <span id="error-TitreEdit" class="error-text titanic">Le titre doit contenir au moins 2 caractères</span>
                 </div>
                 
@@ -209,7 +215,7 @@ function afficherStatut($statut) {
                 <label>Description</label>
                 <div class="input-group">
                     <!-- On pré-remplit la description -->
-                    <textarea name="description" rows="4" class="DescriptionEdit" required><?php echo $projet['description']; ?></textarea>
+                    <textarea name="description" rows="4" class="DescriptionEdit" required><?php echo htmlspecialchars($projet['description']); ?></textarea>
                     <span id="error-DescEdit" class="error-text titanic">La description doit contenir au moins 5 caractères</span>
                 </div>
                 

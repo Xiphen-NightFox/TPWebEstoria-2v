@@ -31,6 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
+
+
+
 // On récupère tous les projets du client connecté, en comptant aussi combien de tickets chaque projet possède
 $sql = "SELECT p.*, COUNT(t.id) AS nb_tickets 
         FROM projets p 
@@ -42,7 +45,13 @@ $sql = "SELECT p.*, COUNT(t.id) AS nb_tickets
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$client_id]);
 // On stocke tous les résultats dans un tableau PHP appelé $projets
-$projets = $stmt->fetchAll(PDO::FETCH_ASSOC); 
+$projets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+function afficherStatut($statut) {
+    if ($statut == 'en_pause') return 'En pause';
+    if ($statut == 'termine') return 'Terminé';
+    return 'En cours';
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -91,7 +100,7 @@ $projets = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         
                         <!-- En-tête de la carte avec le statut et la date formatée au format français (jour/mois/année) -->
                         <div class="card-top">
-                            <span class="status in-progress">En cours</span>
+                            <span class="status in-progress"> <?php echo afficherStatut($projet['statut']); ?> </span>
                             <span class="date-badge">Début : <?php echo date('d/m/Y', strtotime($projet['date_debut'])); ?></span>
                         </div>
                         

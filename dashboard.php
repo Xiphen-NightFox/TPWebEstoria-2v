@@ -71,6 +71,11 @@ $projets_recents = $stmtRecents->fetchAll(PDO::FETCH_ASSOC);
 $stmtCollabs = $pdo->prepare("SELECT * FROM collaborateurs WHERE client_id = ? ORDER BY id DESC");
 $stmtCollabs->execute([$client_id]);
 $collaborateurs = $stmtCollabs->fetchAll(PDO::FETCH_ASSOC);
+function afficherStatut($statut) {
+    if ($statut == 'en_pause') return 'En pause';
+    if ($statut == 'termine') return 'Terminé';
+    return 'En cours';
+}
 
 ?>
 <!DOCTYPE html>
@@ -137,7 +142,7 @@ $collaborateurs = $stmtCollabs->fetchAll(PDO::FETCH_ASSOC);
                 <div class="widget project-widget">
                     <div class="widget-header">
                         <h3><?php echo $projet['titre']; ?></h3>
-                        <span class="status in-progress">En cours</span>
+                        <span class="status in-progress"> <?php echo afficherStatut($projet['statut']);  ?> </span>
                     </div>
                     <p class="project-desc"><?php echo $projet['description']; ?></p>
                     <div class="project-details">

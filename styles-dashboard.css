@@ -279,13 +279,7 @@ body {
     font-weight: bold;
 }
 
-.status.in-progress {
-    background: #00ff88;
-}
-
-.status.pending {
-    background: #ffb700;
-}
+.status.in-progress {background: #3a3a3ab8; color: #ffffff; }
 
 /* Liste Collaborateurs */
 .team-list {

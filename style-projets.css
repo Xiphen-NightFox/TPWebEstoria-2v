@@ -205,9 +205,7 @@ body {
     color: #000;
     font-weight: bold;
 }
-.status.in-progress { background: #00ff88; }
-.status.pending { background: #ffb700; }
-.status.done { background: #00ff88; color: black; } /* Correction contraste */
+.status.in-progress { background: #3a3a3ab8; color: #ffffff; }
 
 /* Carte projet TERMINÉ - Style spécial */
 .project-card-full.completed {

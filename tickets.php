@@ -160,7 +160,8 @@ function formatStatut($statut) {
                                     <span class="badge-type included">Inclus</span>
                                 <?php endif; ?>
                             </td>
-                            <td><span class="badge-prio <?php echo $prioClass; ?>"><?php echo $ticket['priorite']; ?></span></td>
+                                                                                    <!-- maj pour la premiere lettre-->
+                            <td><span class="badge-prio <?php echo $prioClass; ?>"><?php echo ucfirst($ticket['priorite']); ?></span></td>
                             <td><span class="status-dot <?php echo $statutF['class']; ?>"><?php echo $statutF['texte']; ?></span></td>
                             <td><?php echo $ticket['temps_passe']; ?> h</td>
                             <td style="color: grey; font-size: 0.85rem;"><?php echo date('d/m/Y', strtotime($ticket['cree_le'])); ?></td>
@@ -244,11 +245,7 @@ function formatStatut($statut) {
                 </div>
 
                 <div class="modal-actions-right">
-                    <?php if(empty($projets)): ?>
-                        <button type="button" class="btn-create-submit" style="background:grey; cursor:not-allowed;" disabled>Impossible sans projet</button>
-                    <?php else: ?>
-                        <button type="submit" class="btn-create-submit">Enregistrer</button>
-                    <?php endif; ?>
+                    <button type="submit" class="btn-create-submit">Enregistrer</button>
                 </div>
             </form>
             
