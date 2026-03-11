@@ -4,14 +4,17 @@ session_start();
 // Connexion à la base de données
 require 'db.php';
 
+
 // On s'assure que le client est bien connecté
 if (!isset($_SESSION['client_id'])) {
     header("Location: tickets.php");
     exit;
 }
 
+
 $client_id = $_SESSION['client_id'];
 $ticket_id = $_GET['id'];
+
 
 // --- ACTION 1 : SUPPRESSION DU TICKET ---
 // Si l'utilisateur a cliqué sur le bouton de suppression (qui ajoute ?action=delete dans l'URL)
@@ -26,6 +29,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete') {
         exit;
 }
 
+
 // --- ACTION 2 : AJOUT DE TEMPS SUR LE TICKET ---
 // Si le formulaire d'ajout de temps a été envoyé
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'add_time') {
@@ -38,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'add_time') {
     $tStmt->execute([$ticket_id]);
     $temps_actuel = $tStmt->fetchColumn();
 
+
     // On additionne l'ancien temps avec le nouveau temps
     $nouveau_temps = $temps_actuel + $temps_ajoute;
     
@@ -49,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'add_time') {
     header("Location: ticket-detail.php?id=" . $ticket_id . "&success=time");
     exit;
 }
+
 
 // --- ACTION 3 : MODIFICATION DES INFOS DU TICKET ---
 // Si le formulaire de modification a été envoyé
@@ -69,6 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'edit_ticket')
     exit;
 }
 
+
 // --- AFFICHAGE DE LA PAGE : RÉCUPÉRATION DES DONNÉES ---
 // On récupère toutes les informations du ticket, plus le nom du projet lié et sa deadline
 $sql = "SELECT t.*, p.titre AS nom_projet, p.date_fin AS deadline 
@@ -80,22 +87,26 @@ $stmt->execute([$ticket_id, $client_id]);
 // On stocke le résultat dans le tableau $ticket
 $ticket = $stmt->fetch(PDO::FETCH_ASSOC);
 
+
 // Gestion dynamique des couleurs en CSS selon le statut et la priorité
 $statutClasses = ['nouveau' => 'new', 'en_cours' => 'in-progress', 'attente' => 'to-validate', 'termine' => 'done'];
 $statutClass = $statutClasses[$ticket['statut']];
 
+
 $prioClasses = ['faible' => 'low', 'normale' => 'normal', 'haute' => 'high'];
 $prioClass = $prioClasses[$ticket['priorite']];
 ?>
+
 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Détail Ticket #T-<?php echo $ticket['id']; ?> - Estoria</title>
+    <title>Détail Ticket #T-<?php echo htmlspecialchars($ticket['id']); ?> - Estoria</title>
     <link rel="stylesheet" href="styles-tickets.css">
 </head>
+
 
 <body>
     <div class="layout">
@@ -118,6 +129,7 @@ $prioClass = $prioClasses[$ticket['priorite']];
             </div>
         </aside>
 
+
         <!-- Contenu principal -->
         <main class="content">
             
@@ -126,15 +138,15 @@ $prioClass = $prioClasses[$ticket['priorite']];
                 <div class="header-left">
                     <a href="tickets.php" class="back-link">← Retour</a>
                     <span class="separator-pipe">|</span>
-                    <span class="ticket-id">#T-<?php echo $ticket['id']; ?></span>
-                    <h1 class="ticket-title"><?php echo $ticket['titre']; ?></h1>
+                    <span class="ticket-id">#T-<?php echo htmlspecialchars($ticket['id']); ?></span>
+                    <h1 class="ticket-title"><?php echo htmlspecialchars($ticket['titre']); ?></h1>
                 </div>
                 <div class="header-actions">
                     <!-- Bouton pour modifier le ticket (ouvre la modale en CSS) -->
                     <a href="#modal-edit-ticket" class="btn-action" style="text-decoration:none;">✏️ Modifier</a>
                     
                     <!-- Bouton pour supprimer le ticket (ajoute action=delete dans l'URL) -->
-                    <a href="ticket-detail.php?id=<?php echo $ticket['id']; ?>&action=delete" 
+                    <a href="ticket-detail.php?id=<?php echo htmlspecialchars($ticket['id']); ?>&action=delete" 
                        class="btn-action" 
                        style="background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; text-decoration:none;"
                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer définitivement ce ticket ?');">
@@ -142,6 +154,7 @@ $prioClass = $prioClasses[$ticket['priorite']];
                     </a>
                 </div>
             </div>
+
 
             <!-- Grille d'informations -->
             <div class="ticket-grid-layout">
@@ -154,10 +167,11 @@ $prioClass = $prioClasses[$ticket['priorite']];
                         </div>
                         <div class="card-body">
                             <!-- prendre en compte les retours à la lignes -->
-                            <p><?php echo nl2br($ticket['description']); ?></p>
+                            <p><?php echo nl2br(htmlspecialchars($ticket['description'])); ?></p>
                         </div>
                     </div>
                 </div>
+
 
                 <!-- Zone droite : Sidebar d'infos clés -->
                 <div class="side-column">
@@ -166,16 +180,16 @@ $prioClass = $prioClasses[$ticket['priorite']];
                     <div class="side-panel">
                         <div class="side-row">
                             <label>Statut</label>
-                            <span class="status-dot <?php echo $statutClass; ?>" style="padding: 5px 10px; border-radius: 12px; font-size: 0.85rem;">
+                            <span class="status-dot <?php echo htmlspecialchars($statutClass); ?>" style="padding: 5px 10px; border-radius: 12px; font-size: 0.85rem;">
                                 <!-- On met une majuscule et on enlève les tirets du bas -->
-                                <?php echo ucfirst(str_replace('_', ' ', $ticket['statut'])); ?>
+                                <?php echo htmlspecialchars(ucfirst(str_replace('_', ' ', $ticket['statut']))); ?>
                             </span>
                         </div>
                         <div class="side-row">
                             <label>Priorité</label>
-                            <span class="badge-prio <?php echo $prioClass; ?>">
+                            <span class="badge-prio <?php echo htmlspecialchars($prioClass); ?>">
                                 <!-- On met une majuscule -->
-                                <?php echo ucfirst($ticket['priorite']); ?>
+                                <?php echo htmlspecialchars(ucfirst($ticket['priorite'])); ?>
                             </span>
                         </div>
                         <div class="side-row">
@@ -188,13 +202,14 @@ $prioClass = $prioClasses[$ticket['priorite']];
                         </div>
                     </div>
 
+
                     <!-- Bloc 2 : Liens avec le projet -->
                     <div class="side-panel">
                         <h4 class="panel-title">Infos Générales</h4>
                         <div class="detail-list">
                             <div class="detail-item">
                                 <span class="dt-label">Projet</span>
-                                <span class="dt-val"><?php echo $ticket['nom_projet']; ?></span>
+                                <span class="dt-val"><?php echo htmlspecialchars($ticket['nom_projet']); ?></span>
                             </div>
                             <div class="detail-item">
                                 <span class="dt-label">Créé le</span>
@@ -203,22 +218,25 @@ $prioClass = $prioClasses[$ticket['priorite']];
                         </div>
                     </div>
 
+
                     <!-- Bloc 3 : Gestion du temps -->
                     <div class="side-panel">
                         <h4 class="panel-title">Suivi Temps</h4>
                         <div class="time-widget">
                             <div class="time-header">
-                                <span><?php echo $ticket['temps_passe']; ?>h</span>
-                                <span class="time-total"> / <?php echo $ticket['temps_estime']; ?>h</span>
+                                <span><?php echo htmlspecialchars($ticket['temps_passe']); ?>h</span>
+                                <span class="time-total"> / <?php echo htmlspecialchars($ticket['temps_estime']); ?>h</span>
                             </div>
                             <a href="#modal-log-time" class="btn-log-time" style="display: block; box-sizing: border-box; text-decoration:none;">+ Saisir temps</a>
                         </div>
                     </div>
 
+
                 </div>
             </div>
         </main>
     </div>
+
 
     <!-- Fenêtre modale : Formulaire de saisie de temps -->
     <div id="modal-log-time" class="modal-overlay">
@@ -228,7 +246,7 @@ $prioClass = $prioClasses[$ticket['priorite']];
                 <a href="#" class="btn-close">×</a>
             </div>
             
-            <form id="form-time" class="modal-form" method="POST" action="ticket-detail.php?id=<?php echo $ticket_id; ?>">
+            <form id="form-time" class="modal-form" method="POST" action="ticket-detail.php?id=<?php echo htmlspecialchars($ticket_id); ?>">
                 <input type="hidden" name="action" value="add_time">
                 <label>Temps passé (en heures) *</label>
                 <div class="input-group">
@@ -243,6 +261,7 @@ $prioClass = $prioClasses[$ticket['priorite']];
         </div>
     </div>
 
+
     <!-- Fenêtre modale : Formulaire de modification du ticket -->
     <div id="modal-edit-ticket" class="modal-overlay">
         <div class="modal-box">
@@ -251,12 +270,12 @@ $prioClass = $prioClasses[$ticket['priorite']];
                 <a href="#" class="btn-close">×</a>
             </div>
             
-            <form id="form-edit" class="modal-form" method="POST" action="ticket-detail.php?id=<?php echo $ticket_id; ?>">
+            <form id="form-edit" class="modal-form" method="POST" action="ticket-detail.php?id=<?php echo htmlspecialchars($ticket_id); ?>">
                 <input type="hidden" name="action" value="edit_ticket">
                 
                 <label>Titre du ticket *</label>
                 <div class="input-group">
-                    <input type="text" name="titre" class="TitreEdit" value="<?php echo $ticket['titre']; ?>" required>
+                    <input type="text" name="titre" class="TitreEdit" value="<?php echo htmlspecialchars($ticket['titre']); ?>" required>
                     <span id="error-TitreEdit" class="error-text titanic">Titre obligatoire</span>
                 </div>
                 
@@ -296,7 +315,7 @@ $prioClass = $prioClasses[$ticket['priorite']];
         </div>
     </div>
 
+
 <script src="script-tickets.js"></script> 
 </body>
 </html>
-

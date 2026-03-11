@@ -55,14 +55,11 @@ $stmt->execute([$projet_id, $client_id]);
 // On stocke toutes les infos du projet (titre, description, dates...) dans la variable $projet
 $projet = $stmt->fetch(PDO::FETCH_ASSOC);
 
-
 //temps passé sur le projet
 $stmtHeures = $pdo->prepare("SELECT SUM(temps_passe) FROM tickets WHERE projet_id = ?");
 $stmtHeures->execute([$projet_id]);
 // On récupère la somme. S'il n'y a aucun ticket
 $heures_totales = $stmtHeures->fetchColumn() ?: 0; 
-
-
 
 // Petite fonction maison pour traduire le nom du statut ("en_cours" -> "En cours")
 function afficherStatut($statut) {
@@ -78,7 +75,7 @@ function afficherStatut($statut) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- On affiche dynamiquement le titre du projet dans l'onglet du navigateur -->
-    <title>Détail <?php echo $projet['titre']; ?> - Estoria</title>
+    <title>Détail <?php echo htmlspecialchars($projet['titre']); ?> - Estoria</title>
     <link rel="stylesheet" href="styles-tickets.css">
 </head>
 

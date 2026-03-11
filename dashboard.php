@@ -71,6 +71,7 @@ $projets_recents = $stmtRecents->fetchAll(PDO::FETCH_ASSOC);
 $stmtCollabs = $pdo->prepare("SELECT * FROM collaborateurs WHERE client_id = ? ORDER BY id DESC");
 $stmtCollabs->execute([$client_id]);
 $collaborateurs = $stmtCollabs->fetchAll(PDO::FETCH_ASSOC);
+
 function afficherStatut($statut) {
     if ($statut == 'en_pause') return 'En pause';
     if ($statut == 'termine') return 'Terminé';
@@ -141,10 +142,10 @@ function afficherStatut($statut) {
                 ?>
                 <div class="widget project-widget">
                     <div class="widget-header">
-                        <h3><?php echo $projet['titre']; ?></h3>
+                        <h3><?php echo htmlspecialchars($projet['titre']); ?></h3>
                         <span class="status in-progress"> <?php echo afficherStatut($projet['statut']);  ?> </span>
                     </div>
-                    <p class="project-desc"><?php echo $projet['description']; ?></p>
+                    <p class="project-desc"><?php echo htmlspecialchars($projet['description']); ?></p>
                     <div class="project-details">
                         <div class="detail-item"><span>Tickets:</span> <strong><?php echo $projet['tickets_ouverts']; ?> ouverts</strong></div>
                         <div class="detail-item"><span>Deadline:</span> <strong><?php echo date('d/m/Y', strtotime($projet['date_fin'])); ?></strong></div>
@@ -176,7 +177,10 @@ function afficherStatut($statut) {
                         <?php foreach($collaborateurs as $collab): 
                             // On découpe le nom complet pour prendre la première lettre du prénom et la première du nom
                             $mots = explode(' ', trim($collab['nom']));
-                            $initiales_collab = strtoupper(substr($mots[0], 0, 1)) . strtoupper(substr($mots[1], 0, 1));
+                            $initiales_collab = strtoupper(substr($mots[0], 0, 1));
+                            if (isset($mots[1])) {
+                                $initiales_collab .= strtoupper(substr($mots[1], 0, 1));
+                            }
                             
                             // On attribue une couleur dynamique à l'avatar en fonction de la taille du nom
                             $couleurs = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6'];
@@ -184,11 +188,11 @@ function afficherStatut($statut) {
                         ?>
                         <div class="team-member">
                             <div class="avatar" style="background: <?php echo $couleur_avatar; ?>; color: white; display:flex; justify-content:center; align-items:center; width:40px; height:40px; border-radius:50%; font-weight:bold;">
-                                <?php echo $initiales_collab; ?>
+                                <?php echo htmlspecialchars($initiales_collab); ?>
                             </div>
                             <div class="member-info">
-                                <span class="name"><?php echo $collab['nom']; ?></span>
-                                <span class="role"><?php echo $collab['role']; ?></span>
+                                <span class="name"><?php echo htmlspecialchars($collab['nom']); ?></span>
+                                <span class="role"><?php echo htmlspecialchars($collab['role']); ?></span>
                             </div>
                         </div>
                         <?php endforeach; ?>
@@ -211,12 +215,12 @@ function afficherStatut($statut) {
                         <a href="settings.php" class="link-small">Modifier</a>
                     </div>
                     <div class="profile-summary">
-                        <div class="profile-avatar-large"><?php echo $initiales; ?></div>
+                        <div class="profile-avatar-large"><?php echo htmlspecialchars($initiales); ?></div>
                         <div class="profile-details">
-                            <span class="p-name"><?php echo $nom_client; ?></span>
+                            <span class="p-name"><?php echo htmlspecialchars($nom_client); ?></span>
                             <span class="p-role">Client</span>
                             <p class="p-bio">Bienvenue sur votre espace Estoria.</p>
-                            <span class="p-email"><?php echo $email_client; ?></span>
+                            <span class="p-email"><?php echo htmlspecialchars($email_client); ?></span>
                         </div>
                     </div>
                 </div>

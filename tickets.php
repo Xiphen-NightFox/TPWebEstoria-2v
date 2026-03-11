@@ -148,10 +148,10 @@ function formatStatut($statut) {
                             <td class="subject-col">
                                 <!-- Lien pour accéder au détail de ce ticket -->
                                 <a href="ticket-detail.php?id=<?php echo $ticket['id']; ?>">
-                                    Ticket #<?php echo $ticket['id']; ?> : <?php echo $ticket['titre']; ?>
+                                    Ticket #<?php echo $ticket['id']; ?> : <?php echo htmlspecialchars($ticket['titre']); ?>
                                 </a>
                             </td>
-                            <td><?php echo $ticket['nom_projet']; ?></td>
+                            <td><?php echo htmlspecialchars($ticket['nom_projet']); ?></td>
                             <td>
                                 <!-- Affichage du type de ticket (Facturable ou Inclus) -->
                                 <?php if($ticket['est_facturable'] == 1): ?>
@@ -160,10 +160,10 @@ function formatStatut($statut) {
                                     <span class="badge-type included">Inclus</span>
                                 <?php endif; ?>
                             </td>
-                                                                                    <!-- maj pour la premiere lettre-->
-                            <td><span class="badge-prio <?php echo $prioClass; ?>"><?php echo ucfirst($ticket['priorite']); ?></span></td>
-                            <td><span class="status-dot <?php echo $statutF['class']; ?>"><?php echo $statutF['texte']; ?></span></td>
-                            <td><?php echo $ticket['temps_passe']; ?> h</td>
+                                                                                                        <!-- maj pour la premiere lettre-->
+                            <td><span class="badge-prio <?php echo $prioClass; ?>"><?php echo htmlspecialchars(ucfirst($ticket['priorite'])); ?></span></td>
+                            <td><span class="status-dot <?php echo $statutF['class']; ?>"><?php echo htmlspecialchars($statutF['texte']); ?></span></td>
+                            <td><?php echo htmlspecialchars($ticket['temps_passe']); ?> h</td>
                             <td style="color: grey; font-size: 0.85rem;"><?php echo date('d/m/Y', strtotime($ticket['cree_le'])); ?></td>
                         </tr>
                         <?php endforeach; ?>
@@ -206,7 +206,7 @@ function formatStatut($statut) {
                             <!-- On liste dynamiquement les projets du client -->
                             <select name="projet_id" required>
                                 <?php foreach($projets as $proj): ?>
-                                    <option value="<?php echo $proj['id']; ?>"><?php echo $proj['titre']; ?></option>
+                                    <option value="<?php echo $proj['id']; ?>"><?php echo htmlspecialchars($proj['titre']); ?></option>
                                 <?php endforeach; ?>
                             </select>
                         <?php endif; ?>

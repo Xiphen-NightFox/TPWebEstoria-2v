@@ -31,9 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
-
-
-
 // On récupère tous les projets du client connecté, en comptant aussi combien de tickets chaque projet possède
 $sql = "SELECT p.*, COUNT(t.id) AS nb_tickets 
         FROM projets p 
@@ -46,6 +43,7 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute([$client_id]);
 // On stocke tous les résultats dans un tableau PHP appelé $projets
 $projets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 function afficherStatut($statut) {
     if ($statut == 'en_pause') return 'En pause';
     if ($statut == 'termine') return 'Terminé';
@@ -105,11 +103,11 @@ function afficherStatut($statut) {
                         </div>
                         
                         <!-- Affichage du titre du projet -->
-                        <h3><?php echo $projet['titre']; ?></h3>
+                        <h3><?php echo htmlspecialchars($projet['titre']); ?></h3>
                         
                         <!-- Corps de la carte avec la description et le lien vers le détail du projet -->
                         <div class="card-top">
-                            <p class="desc"><?php echo $projet['description']; ?></p>
+                            <p class="desc"><?php echo htmlspecialchars($projet['description']); ?></p>
                             <!-- On fait passer l'ID du projet dans l'URL pour la page suivante -->
                             <a href="projets-detail.php?id=<?php echo $projet['id']; ?>" class="btn-details">voir plus</a>
                         </div>
