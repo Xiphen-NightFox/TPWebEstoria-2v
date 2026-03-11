@@ -178,9 +178,7 @@ function afficherStatut($statut) {
                             // On découpe le nom complet pour prendre la première lettre du prénom et la première du nom
                             $mots = explode(' ', trim($collab['nom']));
                             $initiales_collab = strtoupper(substr($mots[0], 0, 1));
-                            if (isset($mots[1])) {
-                                $initiales_collab .= strtoupper(substr($mots[1], 0, 1));
-                            }
+                            $initiales_collab .= strtoupper(substr($mots[1], 0, 1));
                         ?>
                         <div class="team-member">
                             <div class="avatar" style="background: <?php echo $couleur_avatar; ?>; color: white; display:flex; justify-content:center; align-items:center; width:40px; height:40px; border-radius:50%; font-weight:bold;">
